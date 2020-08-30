@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnconstrainedMelody;
 using Unity.Interception.Utilities;
 using VersionEightFeatures.Enums;
 using VersionEightFeatures.Logic.Contracts;
@@ -13,19 +14,22 @@ namespace VersionEightFeatures.Logic
 		public void ExecuteExamples()
 		{
 			var players = BuildPlayerModels();
-
+			
 			var currentBrownsPlayers = GetCurrentBrownsPlayers(players);
 			Console.WriteLine("Players currently with the Browns: " + currentBrownsPlayers.JoinStrings(", ", player => player.Name));
 			
 			var hallOfFameDefenders = GetHallOfFameDefenders(players);
 			Console.WriteLine("Defenders in the hall of fame: " + hallOfFameDefenders.JoinStrings(", ", player => player.Name));
-			
-			List<Player> BuildPlayerModels() //This would normally come from a database stored procedure, but I'm going to hardcode it for now.
-				=> new List<Player>
+
+			List<Player> BuildPlayerModels() //This data would normally come from a stored procedure, but I'm going to hardcode it for now.
+			{
+				var brownsId = Guid.NewGuid();
+
+				return new List<Player>
 				{
 					new Player
 					{
-						Id = 1,
+						Id = Guid.NewGuid(),
 						IsActive = true,
 						IsInHallOfFame = false,
 						Name = "Baker Mayfield",
@@ -35,7 +39,7 @@ namespace VersionEightFeatures.Logic
 						{
 							new Team
 							{
-								Id = 1,
+								Id = brownsId,
 								City = "Cleveland",
 								Name = "Browns"
 							}
@@ -43,7 +47,7 @@ namespace VersionEightFeatures.Logic
 					},
 					new Player
 					{
-						Id = 2,
+						Id = Guid.NewGuid(),
 						IsActive = false,
 						IsInHallOfFame = true,
 						Name = "Deion Sanders",
@@ -53,31 +57,31 @@ namespace VersionEightFeatures.Logic
 						{
 							new Team
 							{
-								Id = 2,
+								Id = Guid.NewGuid(),
 								City = "Atlanta",
 								Name = "Falcons"
 							},
 							new Team
 							{
-								Id = 3,
+								Id = Guid.NewGuid(),
 								City = "San Francisco",
 								Name = "49ers"
 							},
 							new Team
 							{
-								Id = 4,
+								Id = Guid.NewGuid(),
 								City = "Dallas",
 								Name = "Cowboys"
 							},
 							new Team
 							{
-								Id = 5,
+								Id = Guid.NewGuid(),
 								City = "Washington",
 								Name = "Redskins"
 							},
 							new Team
 							{
-								Id = 6,
+								Id = Guid.NewGuid(),
 								City = "Baltimore",
 								Name = "Ravens"
 							}
@@ -85,7 +89,7 @@ namespace VersionEightFeatures.Logic
 					},
 					new Player
 					{
-						Id = 3,
+						Id = Guid.NewGuid(),
 						IsActive = false,
 						IsInHallOfFame = false,
 						Name = "Peyton Hillis",
@@ -95,37 +99,38 @@ namespace VersionEightFeatures.Logic
 						{
 							new Team
 							{
-								Id = 7,
+								Id = Guid.NewGuid(),
 								City = "Denver",
 								Name = "Broncos"
 							},
 							new Team
 							{
-								Id = 1,
+								Id = brownsId,
 								City = "Cleveland",
 								Name = "Browns"
 							},
 							new Team
 							{
-								Id = 8,
+								Id = Guid.NewGuid(),
 								City = "Kansas City",
 								Name = "Chiefs"
 							},
 							new Team
 							{
-								Id = 9,
+								Id = Guid.NewGuid(),
 								City = "Tampa Bay",
 								Name = "Buccaneers"
 							},
 							new Team
 							{
-								Id = 10,
+								Id = Guid.NewGuid(),
 								City = "New York",
 								Name = "Giants"
 							}
 						}
 					}
 				};
+			}
 		}
 
 		public HashSet<Player> GetCurrentBrownsPlayers(List<Player> players) //Switch expression utilizing pattern matching
@@ -145,7 +150,7 @@ namespace VersionEightFeatures.Logic
 			return players.Where(IsHallOfFameDefender).ToHashSet();
 
 			static bool IsHallOfFameDefender(Player player) //Static local function
-				=> (player.IsInHallOfFame, player.Positions.HasFlag(Position.End & Position.Nose & Position.Linebacker & Position.Cornerback & Position.Safety)) switch
+				=> (player.IsInHallOfFame, player.Positions.HasAny(Position.End | Position.Nose | Position.Linebacker | Position.Cornerback | Position.Safety)) switch
 				{
 					(true, true) => true,
 					(_, _) => false

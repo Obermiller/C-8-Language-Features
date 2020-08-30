@@ -4,7 +4,7 @@ using VersionEightFeatures.Logic.Contracts;
 
 namespace VersionEightFeatures
 {
-	internal class Program
+	public class Program
 	{
 		public static void Main(string[] args)
 		{
